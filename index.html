@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-Speech Demo</title>
+</head>
+<body>
+    <textarea id="inputText" rows="4" cols="50"></textarea>
+    <button onclick="convertToSpeech()">Convert to Speech</button>
+    <audio id="audioPlayer" controls></audio>
+
+    <script src="your-script.js"></script>
+</body>
+</html>
+// Include the AssemblyAI API key
+const assemblyaiApiKey = 'YOUR_ASSEMBLYAI_API_KEY';
+
+// Function to convert text to speech
+async function convertToSpeech() {
+    const inputText = document.getElementById('inputText').value;
+
+    // Make a request to AssemblyAI API
+    const assemblyaiResponse = await fetch('https://api.assemblyai.com/v2/transcript', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'authorization': assemblyaiApiKey,
+        },
+        body: JSON.stringify({
+            audio_url: null,
+            text: inputText,
+        }),
+    });
+
+    const assemblyaiData = await assemblyaiResponse.json();
+
+    if (assemblyaiData.status === 'completed') {
+        const audioUrl = assemblyaiData.url;
+        document.getElementById('audioPlayer').src = audioUrl;
+        document.getElementById('audioPlayer').play();
+    } else {
+        console.error('AssemblyAI transcription failed.');
+    }
+}
+
